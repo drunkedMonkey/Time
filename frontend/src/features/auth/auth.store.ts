@@ -29,6 +29,18 @@ export const useAuthStore = defineStore('auth', {
       localStorage.setItem('token', token)
     },
 
+    async restoreSession() {
+      if (!this.token || this.user) return
+
+      try {
+        this.user = await http<User>('/user')
+      } catch {
+        this.token = null
+        this.user = null
+        localStorage.removeItem('token')
+      }
+    },
+
     async logout() {
       await http('/logout', { method: 'POST' })
       this.token = null

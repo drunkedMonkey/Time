@@ -17,12 +17,20 @@ const router = createRouter({
     { path: '/login', name: 'login', component: LoginView },
     { path: '/admin', name: 'admin-home', component: AdminHomeView, meta: { requiresAdmin: true } },
     { path: '/businesses/:id', name: 'business-home', component: BusinessHomeView },
-    { path: '/', redirect: () => homeRoute(useAuthStore().user) },
+    { path: '/', name: 'root', component: { render: () => null } },
   ],
 })
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   const auth = useAuthStore()
+
+  if (auth.token && !auth.user) {
+    await auth.restoreSession()
+  }
+
+  if (to.name === 'root') {
+    return homeRoute(auth.user)
+  }
 
   if (to.name !== 'login' && !auth.isAuthenticated) {
     return { name: 'login' }
