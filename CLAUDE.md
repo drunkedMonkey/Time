@@ -58,3 +58,7 @@ Dirección estética deliberada, no genérica: paleta cálida "papel + tinta + t
 
 - YAGNI por defecto: no añadir abstracciones, tablas o dependencias especulativas "por si acaso" — el usuario prefiere justificar cada capa nueva con una necesidad real, aunque quiere la base arquitectónica (Clean Architecture, Screaming Architecture) sólida desde el día 0 precisamente para evitar reescrituras costosas más adelante.
 - Antes de dar por terminado un cambio de frontend, arrancar el dev server y verificar visualmente (Playwright/chromium-cli), no solo comprobar que compila.
+- **Al terminar cada feature, escribir tests tanto de backend (PHPUnit/Pest en `backend/tests/`) como de frontend (Vitest + @vue/test-utils en `frontend/src/**/*.test.ts`)** — no dar una feature por cerrada sin su cobertura de test en ambos lados. Cadencia mensual acordada con el usuario: cada mes que se cierre una feature, debe llevar sus tests.
+  - Backend: `cd backend && php artisan test`
+  - Frontend: `cd frontend && npm run test`
+  - Gotcha: Node ≥22 trae un `localStorage` global experimental que pisa el de jsdom y rompe los tests que lo usan (`localStorage.clear is not a function`). El script `npm run test` ya lo desactiva con `NODE_OPTIONS=--no-webstorage`; si se añade otro entrypoint de test hay que repetir ese flag.
