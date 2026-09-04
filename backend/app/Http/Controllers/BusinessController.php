@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Application\Business\CreateBusiness;
+use App\Application\Business\DeleteBusiness;
 use App\Application\Business\ListOwnedBusinesses;
 use App\Domain\Business\BusinessRepository;
 use Illuminate\Http\Request;
@@ -41,5 +42,17 @@ class BusinessController extends Controller
         $business = $createBusiness->handle($request->user()->id, $data['name']);
 
         return response()->json($business, 201);
+    }
+
+    public function destroy(Request $request, int $id, BusinessRepository $businesses, DeleteBusiness $deleteBusiness)
+    {
+        $business = $businesses->find($id);
+
+        abort_unless($business, 404);
+        abort_unless($request->user()->isAdmin() && $business->ownerId === $request->user()->id, 403);
+
+        $deleteBusiness->handle($id);
+
+        return response()->noContent();
     }
 }

@@ -91,4 +91,51 @@ class BusinessTest extends TestCase
 
         $this->actingAs($admin)->getJson('/api/businesses/999')->assertNotFound();
     }
+
+    public function test_owner_admin_can_delete_their_business(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $business = $this->actingAs($admin)->postJson('/api/businesses', ['name' => 'Mi negocio'])->json();
+
+        $this->actingAs($admin)->deleteJson("/api/businesses/{$business['id']}")->assertNoContent();
+
+        $this->assertDatabaseMissing('businesses', ['id' => $business['id']]);
+    }
+
+    public function test_deleting_a_business_unassigns_its_staff(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $business = $this->actingAs($admin)->postJson('/api/businesses', ['name' => 'Mi negocio'])->json();
+        $employee = User::factory()->create(['role' => 'employee', 'business_id' => $business['id']]);
+
+        $this->actingAs($admin)->deleteJson("/api/businesses/{$business['id']}")->assertNoContent();
+
+        $this->assertDatabaseHas('users', ['id' => $employee->id, 'business_id' => null]);
+    }
+
+    public function test_admin_cannot_delete_a_business_they_do_not_own(): void
+    {
+        $owner = User::factory()->create(['role' => 'admin']);
+        $otherAdmin = User::factory()->create(['role' => 'admin']);
+        $business = $this->actingAs($owner)->postJson('/api/businesses', ['name' => 'Ajeno'])->json();
+
+        $this->actingAs($otherAdmin)->deleteJson("/api/businesses/{$business['id']}")->assertForbidden();
+        $this->assertDatabaseHas('businesses', ['id' => $business['id']]);
+    }
+
+    public function test_staff_cannot_delete_a_business(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $business = $this->actingAs($admin)->postJson('/api/businesses', ['name' => 'Mi negocio'])->json();
+        $employee = User::factory()->create(['role' => 'employee', 'business_id' => $business['id']]);
+
+        $this->actingAs($employee)->deleteJson("/api/businesses/{$business['id']}")->assertForbidden();
+    }
+
+    public function test_deleting_a_nonexistent_business_returns_404(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $this->actingAs($admin)->deleteJson('/api/businesses/999')->assertNotFound();
+    }
 }

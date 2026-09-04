@@ -16,3 +16,7 @@ export function createBusiness(name: string) {
     body: JSON.stringify({ name }),
   })
 }
+
+export function deleteBusiness(id: number) {
+  return http<void>(`/businesses/${id}`, { method: 'DELETE' })
+}

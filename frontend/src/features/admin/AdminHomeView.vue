@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label'
 import AppHeader from '@/shared/AppHeader.vue'
 import { useAuthStore } from '@/features/auth/auth.store'
 import EmployeesPanel from '@/features/employees/EmployeesPanel.vue'
+import DeleteBusinessButton from './DeleteBusinessButton.vue'
 import { createBusiness, listBusinesses, type Business } from './businesses.api'
 
 const auth = useAuthStore()
@@ -24,6 +25,10 @@ async function load() {
   } finally {
     loading.value = false
   }
+}
+
+function onBusinessDeleted(id: number) {
+  businesses.value = businesses.value.filter((b) => b.id !== id)
 }
 
 async function onCreate() {
@@ -97,8 +102,9 @@ onMounted(load)
                 <CardHeader>
                   <CardTitle class="font-display text-xl font-normal">{{ business.name }}</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent class="flex items-center justify-between gap-2">
                   <p class="text-sm text-muted-foreground">Sin citas registradas todavía</p>
+                  <DeleteBusinessButton :business="business" @deleted="onBusinessDeleted" />
                 </CardContent>
               </Card>
             </RouterLink>

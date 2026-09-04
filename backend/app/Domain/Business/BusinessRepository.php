@@ -8,6 +8,8 @@ interface BusinessRepository
 
     public function find(int $id): ?Business;
 
+    public function delete(int $id): void;
+
     /** @return Business[] */
     public function forOwner(int $ownerId): array;
 }

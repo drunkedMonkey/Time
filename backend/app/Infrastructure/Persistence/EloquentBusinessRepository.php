@@ -29,6 +29,11 @@ class EloquentBusinessRepository implements BusinessRepository
         return $model ? $this->toDomain($model) : null;
     }
 
+    public function delete(int $id): void
+    {
+        BusinessModel::destroy($id);
+    }
+
     public function forOwner(int $ownerId): array
     {
         return BusinessModel::where('owner_id', $ownerId)

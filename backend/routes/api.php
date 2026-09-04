@@ -15,6 +15,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/businesses', [BusinessController::class, 'index']);
     Route::post('/businesses', [BusinessController::class, 'store']);
     Route::get('/businesses/{id}', [BusinessController::class, 'show']);
+    Route::delete('/businesses/{id}', [BusinessController::class, 'destroy']);
     Route::post('/appointments', [AppointmentController::class, 'store']);
     Route::get('/users', [UserController::class, 'index']);
     Route::post('/users', [UserController::class, 'store']);
