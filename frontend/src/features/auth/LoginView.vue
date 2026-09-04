@@ -19,7 +19,7 @@ async function onSubmit() {
   loading.value = true
   try {
     await auth.login(email.value, password.value)
-    router.push('/')
+    router.push(auth.user?.role === 'admin' ? '/admin' : '/')
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Error al iniciar sesión'
   } finally {

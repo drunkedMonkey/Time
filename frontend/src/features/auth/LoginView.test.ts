@@ -15,7 +15,7 @@ beforeEach(() => {
 })
 
 describe('LoginView', () => {
-  it('logs in and redirects to the dashboard on success', async () => {
+  it('redirects an admin to /admin on success', async () => {
     mockedHttp.mockResolvedValue({
       token: 'abc123',
       user: { id: 1, name: 'Admin Demo', email: 'admin@time.test', role: 'admin', business_id: null },
@@ -26,6 +26,7 @@ describe('LoginView', () => {
       routes: [
         { path: '/login', component: LoginView },
         { path: '/', component: { template: '<div>home</div>' } },
+        { path: '/admin', component: { template: '<div>admin</div>' } },
       ],
     })
     router.push('/login')
@@ -34,6 +35,33 @@ describe('LoginView', () => {
     const wrapper = mount(LoginView, { global: { plugins: [router] } })
 
     await wrapper.find('#email').setValue('admin@time.test')
+    await wrapper.find('#password').setValue('password')
+    await wrapper.find('form').trigger('submit.prevent')
+    await flushPromises()
+
+    expect(router.currentRoute.value.path).toBe('/admin')
+  })
+
+  it('redirects a non-admin to the dashboard on success', async () => {
+    mockedHttp.mockResolvedValue({
+      token: 'xyz789',
+      user: { id: 2, name: 'Empleada Sara', email: 'sara@time.test', role: 'employee', business_id: 1 },
+    })
+
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [
+        { path: '/login', component: LoginView },
+        { path: '/', component: { template: '<div>home</div>' } },
+        { path: '/admin', component: { template: '<div>admin</div>' } },
+      ],
+    })
+    router.push('/login')
+    await router.isReady()
+
+    const wrapper = mount(LoginView, { global: { plugins: [router] } })
+
+    await wrapper.find('#email').setValue('sara@time.test')
     await wrapper.find('#password').setValue('password')
     await wrapper.find('form').trigger('submit.prevent')
     await flushPromises()
