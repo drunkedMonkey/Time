@@ -43,16 +43,22 @@ Dirección estética deliberada, no genérica: paleta cálida "papel + tinta + t
 
 ## Modelo de datos (estado actual)
 
-- `users`: `role`, `business_id` (nullable, null solo para Admin).
+- `users`: `role`, `business_id` (nullable, null para Admin o para staff desasignado), `dni` (único, nullable), `employee_number` (único, autogenerado — ver abajo, nullable), `created_by` (FK a `users.id`: qué Admin dio de alta a ese usuario; independiente de `business_id`, así el empleado sigue siendo localizable aunque quede desasignado).
 - `businesses`: `owner_id` → user Admin dueño, `name`.
 - `appointments`: `business_id`, `customer_name`, `customer_phone`, `starts_at`, `ends_at`, `channel` (`whatsapp`/`call`/`manual`), `status` (`scheduled`/`cancelled`/`completed`).
+- `employee_number_counters`: tabla auxiliar de solo autoincremento (sin columnas propias) para generar `employee_number` de forma atómica y portable (Postgres y SQLite en tests) — formato `EMP-00001`. No usar `CREATE SEQUENCE` nativo de Postgres porque los tests corren en SQLite.
+
+**"Eliminar" un empleado nunca borra el registro**: el botón "Eliminar" del listado de empleados en realidad **desasigna** (`business_id = null`), conservando DNI, número de empleado y demás datos por si se le vuelve a contratar. El modal de confirmación es deliberadamente disuasorio y aclara esto. Ver `POST /api/users/{id}/unassign`.
 
 ## Endpoints actuales
 
 - `POST /api/login`, `POST /api/logout` (Sanctum token)
 - `GET /api/user`
-- `POST /api/businesses`
+- `GET|POST /api/businesses`, `GET|DELETE /api/businesses/{id}` (solo Admin dueño; al borrar un negocio, sus citas se eliminan en cascada y el staff asignado queda con `business_id = null`)
 - `POST /api/appointments`
+- `GET|POST /api/users` (alta/listado de staff, solo Admin; el listado se filtra por `created_by`, no por `business_id`, para incluir también al staff desasignado)
+- `PUT /api/users/{id}` (editar staff que el Admin creó)
+- `POST /api/users/{id}/unassign` (desasignar, no borra — ver arriba)
 
 ## Convenciones de trabajo
 

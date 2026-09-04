@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { Input } from '@/components/ui/input'
 import type { Business } from '@/features/admin/businesses.api'
 import CreateEmployeeDialog from './CreateEmployeeDialog.vue'
+import EmployeeRowActions from './EmployeeRowActions.vue'
 import { listEmployees, type Employee } from './employees.api'
 
 const props = defineProps<{ businesses: Business[] }>()
@@ -30,6 +31,11 @@ async function load() {
 
 function onCreated(employee: Employee) {
   employees.value.unshift(employee)
+}
+
+function onEmployeeChanged(employee: Employee) {
+  const index = employees.value.findIndex((e) => e.id === employee.id)
+  if (index !== -1) employees.value[index] = employee
 }
 
 let debounceTimer: ReturnType<typeof setTimeout>
@@ -62,6 +68,7 @@ onMounted(load)
             <th class="py-2 pr-4 font-normal">Nº empleado</th>
             <th class="py-2 pr-4 font-normal">Rol</th>
             <th class="py-2 pr-4 font-normal">Negocio</th>
+            <th class="py-2 pr-4 font-normal"><span class="sr-only">Acciones</span></th>
           </tr>
         </thead>
         <tbody>
@@ -72,6 +79,14 @@ onMounted(load)
             <td class="py-2 pr-4 text-muted-foreground">{{ roleLabels[employee.role] }}</td>
             <td class="py-2 pr-4 text-muted-foreground">
               {{ employee.business_id ? businessNameById.get(employee.business_id) : '—' }}
+            </td>
+            <td class="py-2 pr-4 text-right">
+              <EmployeeRowActions
+                :employee="employee"
+                :businesses="businesses"
+                @updated="onEmployeeChanged"
+                @unassigned="onEmployeeChanged"
+              />
             </td>
           </tr>
         </tbody>

@@ -30,6 +30,7 @@ class User extends Authenticatable
         'business_id',
         'dni',
         'employee_number',
+        'created_by',
     ];
 
     /**

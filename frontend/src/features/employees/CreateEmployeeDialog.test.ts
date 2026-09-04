@@ -23,7 +23,6 @@ afterEach(() => {
 async function fillAndSubmit(body: DOMWrapper<HTMLElement>) {
   await body.find('#emp-name').setValue('Sara Pérez')
   await body.find('#emp-dni').setValue('12345678A')
-  await body.find('#emp-number').setValue('EMP-001')
   await body.find('#emp-email').setValue('sara@time.test')
   await body.find('#emp-password').setValue('password123')
   await body.find('form').trigger('submit.prevent')

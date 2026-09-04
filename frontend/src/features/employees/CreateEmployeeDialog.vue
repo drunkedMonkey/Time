@@ -33,7 +33,6 @@ const form = reactive({
   email: '',
   password: '',
   dni: '',
-  employee_number: '',
   role: 'employee' as 'admin' | 'supervisor' | 'employee',
   business_id: undefined as number | undefined,
 })
@@ -52,7 +51,6 @@ function resetForm() {
   form.email = ''
   form.password = ''
   form.dni = ''
-  form.employee_number = ''
   form.role = 'employee'
   form.business_id = undefined
   error.value = ''
@@ -96,15 +94,9 @@ async function onSubmit() {
           <Input id="emp-name" v-model="form.name" required />
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
-          <div class="space-y-1.5">
-            <Label for="emp-dni">DNI</Label>
-            <Input id="emp-dni" v-model="form.dni" required />
-          </div>
-          <div class="space-y-1.5">
-            <Label for="emp-number">Número de empleado</Label>
-            <Input id="emp-number" v-model="form.employee_number" required />
-          </div>
+        <div class="space-y-1.5">
+          <Label for="emp-dni">DNI</Label>
+          <Input id="emp-dni" v-model="form.dni" required />
         </div>
 
         <div class="space-y-1.5">
