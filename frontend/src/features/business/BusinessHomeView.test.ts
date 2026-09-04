@@ -15,7 +15,10 @@ async function renderAs(role: 'admin' | 'supervisor' | 'employee') {
 
   const router = createRouter({
     history: createMemoryHistory(),
-    routes: [{ path: '/businesses/:id', name: 'business-home', component: BusinessHomeView }],
+    routes: [
+      { path: '/businesses/:id', name: 'business-home', component: BusinessHomeView },
+      { path: '/admin', name: 'admin-home', component: { template: '<div>admin</div>' } },
+    ],
   })
   router.push('/businesses/1')
   await router.isReady()

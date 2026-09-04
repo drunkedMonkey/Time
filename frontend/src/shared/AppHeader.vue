@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/features/auth/auth.store'
 
 const auth = useAuthStore()
 const router = useRouter()
+const route = useRoute()
 
 const roleLabels: Record<string, string> = {
   admin: 'Administrador',
@@ -27,7 +28,12 @@ async function onLogout() {
           {{ roleLabels[auth.user?.role ?? 'employee'] }}
         </p>
       </div>
-      <Button variant="outline" size="sm" @click="onLogout">Cerrar sesión</Button>
+      <div class="flex items-center gap-2">
+        <Button v-if="auth.user?.role === 'admin' && route.name !== 'admin-home'" as-child variant="outline" size="sm">
+          <RouterLink :to="{ name: 'admin-home' }">Volver al panel de administrador</RouterLink>
+        </Button>
+        <Button variant="outline" size="sm" @click="onLogout">Cerrar sesión</Button>
+      </div>
     </div>
   </header>
 </template>
