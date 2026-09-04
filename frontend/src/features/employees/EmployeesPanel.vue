@@ -72,7 +72,12 @@ onMounted(load)
           </tr>
         </thead>
         <tbody>
-          <tr v-for="employee in employees" :key="employee.id" class="border-b border-border">
+          <tr
+            v-for="employee in employees"
+            :key="employee.id"
+            class="border-b border-border"
+            :class="{ 'opacity-45': !employee.business_id }"
+          >
             <td class="py-2 pr-4 text-foreground">{{ employee.name }}</td>
             <td class="py-2 pr-4 text-muted-foreground">{{ employee.dni }}</td>
             <td class="py-2 pr-4 text-muted-foreground">{{ employee.employee_number }}</td>

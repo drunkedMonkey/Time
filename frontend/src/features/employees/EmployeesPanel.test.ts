@@ -31,6 +31,20 @@ describe('EmployeesPanel', () => {
     expect(wrapper.text()).toContain('Peluquería Ana')
   })
 
+  it('dims the row of an unassigned employee (no current business)', async () => {
+    mockedHttp.mockResolvedValue([
+      { id: 1, name: 'Sara Pérez', email: 's@t.test', dni: '111', employee_number: 'EMP-1', role: 'employee', business_id: 1 },
+      { id: 2, name: 'Sin negocio', email: 's2@t.test', dni: '222', employee_number: 'EMP-2', role: 'employee', business_id: null },
+    ])
+
+    const wrapper = mount(EmployeesPanel, { props: { businesses } })
+    await flushPromises()
+
+    const rows = wrapper.findAll('tbody tr')
+    expect(rows[0].classes()).not.toContain('opacity-45')
+    expect(rows[1].classes()).toContain('opacity-45')
+  })
+
   it('debounces the search input before calling the API again', async () => {
     mockedHttp.mockResolvedValue([])
 
