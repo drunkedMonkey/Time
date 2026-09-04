@@ -64,14 +64,21 @@ onMounted(load)
           Todavía no has dado de alta ningún negocio.
         </p>
         <div v-else class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <Card v-for="business in businesses" :key="business.id">
-            <CardHeader>
-              <CardTitle class="font-display text-xl font-normal">{{ business.name }}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p class="text-sm text-muted-foreground">Sin citas registradas todavía</p>
-            </CardContent>
-          </Card>
+          <RouterLink
+            v-for="business in businesses"
+            :key="business.id"
+            :to="{ name: 'business-home', params: { id: business.id } }"
+            class="block transition-opacity hover:opacity-80"
+          >
+            <Card>
+              <CardHeader>
+                <CardTitle class="font-display text-xl font-normal">{{ business.name }}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p class="text-sm text-muted-foreground">Sin citas registradas todavía</p>
+              </CardContent>
+            </Card>
+          </RouterLink>
         </div>
       </div>
     </main>

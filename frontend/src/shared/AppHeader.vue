@@ -1,13 +1,20 @@
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/features/auth/auth.store'
 
 const auth = useAuthStore()
+const router = useRouter()
 
 const roleLabels: Record<string, string> = {
   admin: 'Administrador',
   supervisor: 'Supervisor',
   employee: 'Empleado',
+}
+
+async function onLogout() {
+  await auth.logout()
+  router.push('/login')
 }
 </script>
 
@@ -20,7 +27,7 @@ const roleLabels: Record<string, string> = {
           {{ roleLabels[auth.user?.role ?? 'employee'] }}
         </p>
       </div>
-      <Button variant="outline" size="sm" @click="auth.logout()">Cerrar sesión</Button>
+      <Button variant="outline" size="sm" @click="onLogout">Cerrar sesión</Button>
     </div>
   </header>
 </template>

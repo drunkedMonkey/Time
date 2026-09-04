@@ -9,6 +9,17 @@ vi.mock('@/shared/http', () => ({ http: vi.fn() }))
 
 const mockedHttp = vi.mocked(http)
 
+function buildRouter() {
+  return createRouter({
+    history: createMemoryHistory(),
+    routes: [
+      { path: '/login', name: 'login', component: LoginView },
+      { path: '/admin', name: 'admin-home', component: { template: '<div>admin</div>' } },
+      { path: '/businesses/:id', name: 'business-home', component: { template: '<div>business</div>' } },
+    ],
+  })
+}
+
 beforeEach(() => {
   setActivePinia(createPinia())
   mockedHttp.mockReset()
@@ -21,14 +32,7 @@ describe('LoginView', () => {
       user: { id: 1, name: 'Admin Demo', email: 'admin@time.test', role: 'admin', business_id: null },
     })
 
-    const router = createRouter({
-      history: createMemoryHistory(),
-      routes: [
-        { path: '/login', component: LoginView },
-        { path: '/', component: { template: '<div>home</div>' } },
-        { path: '/admin', component: { template: '<div>admin</div>' } },
-      ],
-    })
+    const router = buildRouter()
     router.push('/login')
     await router.isReady()
 
@@ -42,20 +46,13 @@ describe('LoginView', () => {
     expect(router.currentRoute.value.path).toBe('/admin')
   })
 
-  it('redirects a non-admin to the dashboard on success', async () => {
+  it('redirects a non-admin to their business home on success', async () => {
     mockedHttp.mockResolvedValue({
       token: 'xyz789',
       user: { id: 2, name: 'Empleada Sara', email: 'sara@time.test', role: 'employee', business_id: 1 },
     })
 
-    const router = createRouter({
-      history: createMemoryHistory(),
-      routes: [
-        { path: '/login', component: LoginView },
-        { path: '/', component: { template: '<div>home</div>' } },
-        { path: '/admin', component: { template: '<div>admin</div>' } },
-      ],
-    })
+    const router = buildRouter()
     router.push('/login')
     await router.isReady()
 
@@ -66,19 +63,13 @@ describe('LoginView', () => {
     await wrapper.find('form').trigger('submit.prevent')
     await flushPromises()
 
-    expect(router.currentRoute.value.path).toBe('/')
+    expect(router.currentRoute.value.path).toBe('/businesses/1')
   })
 
   it('shows an error message on failed login', async () => {
     mockedHttp.mockRejectedValue(new Error('Credenciales inválidas.'))
 
-    const router = createRouter({
-      history: createMemoryHistory(),
-      routes: [
-        { path: '/login', component: LoginView },
-        { path: '/', component: { template: '<div>home</div>' } },
-      ],
-    })
+    const router = buildRouter()
     router.push('/login')
     await router.isReady()
 
