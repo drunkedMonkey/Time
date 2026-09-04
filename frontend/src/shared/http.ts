@@ -15,7 +15,8 @@ export async function http<T>(path: string, options: RequestInit = {}): Promise<
 
   if (!response.ok) {
     const body = await response.json().catch(() => null)
-    throw new Error(body?.message ?? `Request failed: ${response.status}`)
+    const firstValidationError = body?.errors ? Object.values(body.errors)[0] as string[] | undefined : undefined
+    throw new Error(firstValidationError?.[0] ?? body?.message ?? `Request failed: ${response.status}`)
   }
 
   if (response.status === 204) return undefined as T

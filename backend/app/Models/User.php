@@ -7,6 +7,7 @@ use App\Infrastructure\Persistence\Eloquent\BusinessModel;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -27,6 +28,9 @@ class User extends Authenticatable
         'password',
         'role',
         'business_id',
+        'dni',
+        'employee_number',
+        'created_by',
     ];
 
     /**
@@ -55,6 +59,11 @@ class User extends Authenticatable
     public function business(): BelongsTo
     {
         return $this->belongsTo(BusinessModel::class, 'business_id');
+    }
+
+    public function ownedBusinesses(): HasMany
+    {
+        return $this->hasMany(BusinessModel::class, 'owner_id');
     }
 
     public function isAdmin(): bool

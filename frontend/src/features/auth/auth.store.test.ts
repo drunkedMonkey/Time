@@ -54,4 +54,52 @@ describe('auth store', () => {
     expect(auth.user).toBeNull()
     expect(localStorage.getItem('token')).toBeNull()
   })
+
+  describe('restoreSession', () => {
+    it('fetches the user when a token exists but the user was lost (e.g. page reload)', async () => {
+      mockedHttp.mockResolvedValue({ id: 1, name: 'Admin Demo', email: 'admin@time.test', role: 'admin', business_id: null })
+
+      const auth = useAuthStore()
+      auth.token = 'abc123'
+
+      await auth.restoreSession()
+
+      expect(mockedHttp).toHaveBeenCalledWith('/user')
+      expect(auth.user?.name).toBe('Admin Demo')
+      expect(auth.isAuthenticated).toBe(true)
+    })
+
+    it('clears the stale token when it is no longer valid, instead of leaving a broken session', async () => {
+      mockedHttp.mockRejectedValue(new Error('Unauthenticated.'))
+      localStorage.setItem('token', 'stale-token')
+
+      const auth = useAuthStore()
+      auth.token = 'stale-token'
+
+      await auth.restoreSession()
+
+      expect(auth.token).toBeNull()
+      expect(auth.user).toBeNull()
+      expect(auth.isAuthenticated).toBe(false)
+      expect(localStorage.getItem('token')).toBeNull()
+    })
+
+    it('does nothing when there is no token', async () => {
+      const auth = useAuthStore()
+
+      await auth.restoreSession()
+
+      expect(mockedHttp).not.toHaveBeenCalled()
+    })
+
+    it('does nothing when the user is already loaded', async () => {
+      const auth = useAuthStore()
+      auth.token = 'abc123'
+      auth.user = { id: 1, name: 'Admin Demo', email: 'admin@time.test', role: 'admin', business_id: null }
+
+      await auth.restoreSession()
+
+      expect(mockedHttp).not.toHaveBeenCalled()
+    })
+  })
 })

@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { homeRoute } from '@/router'
 import { useAuthStore } from './auth.store'
 
 const email = ref('')
@@ -19,7 +20,7 @@ async function onSubmit() {
   loading.value = true
   try {
     await auth.login(email.value, password.value)
-    router.push('/')
+    router.push(homeRoute(auth.user))
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Error al iniciar sesión'
   } finally {
