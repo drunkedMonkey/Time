@@ -60,6 +60,12 @@ Dirección estética deliberada, no genérica: paleta cálida "papel + tinta + t
 - `PUT /api/users/{id}` (editar staff que el Admin creó)
 - `POST /api/users/{id}/unassign` (desasignar, no borra — ver arriba)
 
+## Gestión de tareas (Trello)
+
+Board "Time" en Trello: https://trello.com/b/w1MdXpZc — listas **To Do / In Progress / Done**. Flujo manual guiado: el usuario pide crear una tarjeta, se crea en To Do; al empezar una feature se mueve a In Progress y se nombra la rama según la tarjeta; al fusionar a `main` se mueve a Done.
+
+Credenciales de la API de Trello (key + token) viven **fuera del repo**, en `~/.config/time-trello/credentials.env` (nunca en git, nunca se imprimen en texto plano en la conversación). Cargar con `source ~/.config/time-trello/credentials.env` antes de llamar a la API (`$TRELLO_API_KEY`, `$TRELLO_TOKEN`, `$TRELLO_BOARD_ID`, `$TRELLO_LIST_TODO`, `$TRELLO_LIST_IN_PROGRESS`, `$TRELLO_LIST_DONE`).
+
 ## Convenciones de trabajo
 
 - YAGNI por defecto: no añadir abstracciones, tablas o dependencias especulativas "por si acaso" — el usuario prefiere justificar cada capa nueva con una necesidad real, aunque quiere la base arquitectónica (Clean Architecture, Screaming Architecture) sólida desde el día 0 precisamente para evitar reescrituras costosas más adelante.
